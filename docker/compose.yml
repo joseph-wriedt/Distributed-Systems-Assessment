@@ -1,0 +1,30 @@
+services:
+  afs-server:
+    build: .
+    container_name: afs-server-main
+    hostname: afs-server-main
+    volumes:
+      - ../data/afs_server_main:/data
+    networks:
+      - afsnet
+    command: bash -c "mkdir -p /data/server /data/output && tail -f /dev/null"
+    # python src/server/file_server.py - add to commands once exists
+    ports:
+      - "5000:5000"
+
+  afs_client:
+    build: .
+    container_name: afs-client
+    hostname: afs-client
+    depends_on:
+      - afs-server
+    networks:
+      - afsnet
+    volumes:
+      - ./data/afs_client:/data
+    command: bash -c "mkdir -p /data/cache && tail -f /dev/null"
+    # python src/client/client_app.py - add to commands once exists
+
+networks:
+  afsnet:
+    driver: bridge
